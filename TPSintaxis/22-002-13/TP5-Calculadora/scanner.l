@@ -35,9 +35,9 @@ espacio [[:space:]]
 var return VAR;
 cte return CONSTANTE;
 salir return SALIR;
-{constante} {yylval = strdup(yytext); return NUMERO;}
-{funcion} {yylval = strdup(yytext); return FUNCION;}
-{identificador} {yylval = strdup(yytext); return IDENTIFICADOR;}
+{constante} {yylval = atof(yytext); return NUMERO;}
+{funcion} {yylval = getsym(yytext); return FUNCION;}
+{identificador} {yylval = getsym(yytext); return IDENTIFICADOR;}
 ({digitoNoCero}({digito}|{identificador_noDigito})*)|({constante_fraccionaria}{inval}+({constante_fraccionaria}|{identificador_noDigito})*) {yylexerrs++; sprintf(msg, "Error léxico: constante inválida: %s", yytext); yyerror(msg);}
 {identificador_noDigito}({identificador_noDigito}|{caracter_invalido})+ {yylexerrs++; sprintf(msg, "Error léxico: identificador inválido: %s", yytext); yyerror(msg);}
 ({identificador_noDigito}|{caracter_invalido})({identificador_noDigito}|{caracter_invalido}|{constante})* {yylexerrs++; sprintf(msg, "Error léxico: cadena desconocida: %s", yytext); yyerror(msg);}

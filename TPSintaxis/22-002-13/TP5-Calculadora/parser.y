@@ -26,11 +26,11 @@ struct YYSTYPE{
 %start programa
 
 %token NL
-%token<dval> NUMERO 
-%token<idval> IDENTIFICADOR 
-%token<idval> FUNCION
-%type<dval> expresion
-%type<dval> declaracion
+%token <dval> NUMERO 
+%token <idval> IDENTIFICADOR 
+%token <idval> FUNCION
+%nterm <dval> expresion
+%nterm <dval> declaracion
 
 %token VAR CONSTANTE SALIR
 
@@ -39,8 +39,8 @@ struct YYSTYPE{
 %token ASIGPOR "*="
 %token ASIGDIV "/="
 
-%precedence '=' 
-%right "+=" "-=" "*=" "/="
+
+%right '=' "+=" "-=" "*=" "/="
 %left '+' '-'
 %left '*' '/'
 %precedence NEG
@@ -61,17 +61,17 @@ sentencia 		: NL
 			| error NL
 			| SALIR NL
 			;
-declaracion		: CONSTANTE IDENTIFICADOR '=' expresion  { aux=getsym($2->nombre); if (aux) { printf("Es una constante, no se puede redeclarar"); YYERROR;} else { printf("%s: %f",$2->nombre,$4->valor.nro); aux=putsym($2->nombre,TYP_CTE); $$=($2->valor.nro)=$4->valor.nro ;} }
+declaracion		: CONSTANTE IDENTIFICADOR '=' expresion  { aux=getsym($2->nombre); if (aux) { printf("Es una constante, no se puede redeclarar\n"); YYERROR;} else { printf("%s: %f\n",$2->nombre,$4->valor.nro); aux=putsym($2->nombre,CONSTANTE); $$=($2->valor.nro)=$4->valor.nro ;} }
 			| VAR IDENTIFICADOR 		   	 { aux=getsym($<idval>2); if (aux) { $$=(aux->valor.nro)    ;} else { printf("%s: 0 \n",$2); $$=0; } }
 			
 			//{ aux=getsym($2->nombre); if (aux) { printf("Se esta redeclarando la variable"); YYERROR;} else { printf("%s: 0",$2); $$=0; } }
-			| VAR IDENTIFICADOR '=' expresion 	 { aux=getsym($<idval>2); if (aux) { $$=(aux->valor.nro)=$4 ;} else { printf("%d: %f \n",$2,$4); aux=putsym(strdup($2),TYP_VAR); $$=(aux->valor.nro)=$4 ;} }
+			| VAR IDENTIFICADOR '=' expresion 	 { aux=getsym($<idval>2); if (aux) { $$=(aux->valor.nro)=$4 ;} else { printf("%d: %f \n",$2,$4); aux=putsym(strdup($2),VAR); $$=(aux->valor.nro)=$4 ;} }
 			
 			//{ aux=getsym($2->nombre); if (aux) { printf("Se esta redeclarando la variable") ; YYERROR;} else { printf("%s: %f",$2,$4); aux=putsym($2->nombre,TYP_VAR); $$=($2->valor.nro)=$4 ;} }
 			;
 
 
-			// Gramatica Achatada //
+		// Gramatica Achatada //
 expresion		: expresion '+' expresion 		{ $$ = $1 + $3;                    }
 			| expresion '-' expresion 		{ $$ = $1 - $3;                    }
 			| expresion '*' expresion 		{ $$ = $1 * $3;                    }
